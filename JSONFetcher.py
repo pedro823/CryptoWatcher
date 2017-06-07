@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import http.client as cl
 import json
 from sys import argv
@@ -7,7 +8,7 @@ import time
 # # #
 # Removes unnecessary whitespace from archive.
 # # #
-def remove_whitespace(file_name = "visualizer/history.json"):
+def remove_whitespace(file_name = "history.json"):
     a = None
     with open(file_name, 'r') as f:
         a = "".join(f.readlines())
@@ -21,16 +22,19 @@ def remove_whitespace(file_name = "visualizer/history.json"):
 # # #
 def create_JSON(new_json, file_name):
     arr_out = []
-    timestamp = int(time.time())
+    timestamp = int(time.time()) * 1000
     new_json = json.loads(new_json)
     for i in new_json:
         arr_out.append({
-            "type" : "line",
-            "name" : i["symbol"],
-            "dataPoints" : [{
-                "x" : timestamp,
-                "y" : float(i["price_brl"])
-            }]
+            "type": "spline",
+            "visible": False,
+            "xValueType": "dateTime",
+            "showInLegend": True,
+            "name": i["symbol"],
+            "dataPoints": [{
+                "x": timestamp,
+                "y": float(i["price_brl"])
+            }],
         })
     return json.dumps(arr_out, indent = 4)
 
@@ -52,7 +56,7 @@ def format_JSON(new_json, file_name):
         with open(file_name, 'r') as f:
             old_json = json.load(f)
         new_json = json.loads(new_json)
-        timestamp = int(time.time())
+        timestamp = int(time.time()) * 1000
         for i in new_json:
             price_brl = float(i["price_brl"])
             actual = { "x" : timestamp, "y" : price_brl }
@@ -72,7 +76,7 @@ def format_JSON(new_json, file_name):
 # and dumps into @file_name
 # @return void
 # # #
-def fetch_JSON(file_name = "visualizer/history.json"):
+def fetch_JSON(file_name = "history.json"):
     # Creates connection to server
     connection = cl.HTTPConnection("api.coinmarketcap.com", 80)
     connection.set_debuglevel(1)

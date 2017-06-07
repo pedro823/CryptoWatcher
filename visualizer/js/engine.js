@@ -15,23 +15,28 @@ function load_json(file_name) {
   return json_archive;
 }
 
-function create_chart(object) {
-  var data_array = [];
-  var symbol_array = [];
-  for(var i = 0; i < object.length; i++) {
-  }
-  console.log(object)
+function create_chart_canvasJS(object) {
   var chart = new CanvasJS.Chart("chart", {
+    zoomEnabled : true,
+    legend: {
+        cursor: "pointer",
+        itemclick: function (e) {
+            if (typeof (e.dataSeries.visible) === "undefined" || e.dataSeries.visible) {
+                e.dataSeries.visible = false;
+            } else {
+                e.dataSeries.visible = true;
+            }
+            e.chart.render();
+        }
+    },
     title: { text: "CryptoWatcher" },
-    axisY: { includeZero : false },
-    data: [
-
-    ],
+    axisY: { includeZero : false, prefix: "R$" },
+    data: object,
   });
   chart.render();
 }
 
 $(document).ready(function() {
   var a = load_json("http://localhost:8000/history.json");
-  create_chart(a);
+  create_chart_canvasJS(a);
 });
